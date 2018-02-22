@@ -1,0 +1,2114 @@
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+\documentclass[xcolor=table]{beamer}
+\usepackage[brazilian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage{changepage}
+\usepackage{amsmath,latexsym,amssymb}       % Pacotes matemáticos
+\usepackage{amsthm}                         % Pacote de teorema
+\usetheme{Frankfurt}
+\usecolortheme{dove}
+\bibliographystyle{apalike}
+\usepackage{adjustbox}
+\usepackage{amsfonts}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage[normalem]{ulem}
+\useunder{\uline}{\ul}{}
+\usepackage{graphicx}
+
+%\begin{document}
+
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\newcommand{\preto}{ \cellcolor[HTML]{333333} }
+\newcommand{\cinza}{ \cellcolor[HTML]{656565} }
+\setbeamertemplate{theorems}[numbered]
+\newtheorem{thm}{Teorema}
+\newtheorem{lem}[thm]{Lema}
+\newtheorem{conj}[thm]{Conjectura}
+\newtheorem{remark}[thm]{Observação}
+\newtheorem{cor}[thm]{Corolário}
+
+\newtheoremstyle{sememph}{}{}{\upshape}{}{\bfseries \scshape}{.}{1em}{}
+\theoremstyle{sememph}
+\newtheorem{definicao}[thm]{Definição}
+
+\title{O Problema da Coloração de Arestas nos grafos arco-circulares}
+
+% A subtitle is optional and this may be deleted
+%\subtitle{Optional Subtitle}
+
+\author{João Pedro Winckler Bernardi\inst{1}  \and Sheila Morais de
+  Almeida\inst{2} \and Emílio Wuerges\inst{1}}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[Universidade Federal da Fronteira Sul and Universidade Tecnológica do Paraná] % (optional, but mostly needed)
+{
+  \inst{1}%
+  Universidade Federal da Fronteira Sul (UFFS)
+  \and
+  \inst{2}%
+  Universidade Tecnológica do Paraná (UTFPR)}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+%\date{Conference Name, 2013}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+%\subject{Theoretical Computer Science}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>{Sumário}
+    \tableofcontents[currentsection,hideallsubsections]
+  \end{frame}
+}
+
+\beamertemplatenavigationsymbolsempty
+\setbeamertemplate{section in toc}[sections numbered]
+\setbeamerfont{section in toc}{series=\bfseries}
+\setbeamertemplate{subsection in toc}[subsections numbered]
+\setbeamercovered{highly dynamic}
+\setbeamertemplate{footline}{%
+  \leavevmode\hbox{\begin{beamercolorbox}%
+                    [wd=\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm,rightskip=.3cm]%
+                    {footlinecolor}%
+                    \usebeamerfont{author in head/foot}%
+                    \insertshorttitle\hfill\insertdate%
+                   \end{beamercolorbox}}}
+
+% Let's get started
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Sumário}
+  \tableofcontents[hideallsubsections]
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+% Section and subsections will appear in the presentation overview
+% and table of contents.
+\section{Introdução}
+
+%\subsection{First Subsection}
+
+\begin{frame}{Problema da Coloração de Aresta}{Exemplo}
+   \center{
+     \only<1>{
+       \begin{tikzpicture}[scale=3]
+         \draw[thick] (0,0) -- (0,1);
+         \draw[thick] (0,0) -- (1,1);
+         \draw[thick] (0,0) -- (1,0);
+         \draw[thick] (0,1) -- (1,0);
+         \draw[thick] (0,1) -- (1,1);
+         \draw[thick] (1,1) -- (1,0);
+         \filldraw [black] (0,0) circle (1pt)
+         (0,1) circle (1pt)
+         (1,1) circle (1pt)
+         (1,0) circle (1pt);
+                  \draw (0, -0.1) node {c};
+         \draw (1, -0.1) node {d};
+         \draw (0, 1.1) node {a};
+         \draw (1, 1.1) node {b};
+       \end{tikzpicture}
+     }
+     \only<2>{
+       \begin{tikzpicture}[scale=3]
+         \draw (0, -0.1) node {c};
+         \draw (1, -0.1) node {d};
+         \draw (0, 1.1) node {a};
+         \draw (1, 1.1) node {b};
+         %\draw[very thick,->] (-0.4,0.5) -- (-0.2,0.5);
+         \draw[thick][red] (0,0) -- (0,1);
+         \draw[thick][green] (0,0) -- (1,1);
+         \draw[thick][blue] (0,0) -- (1,0);
+         \draw[thick][green] (0,1) -- (1,0);
+         \draw[thick][blue] (0,1) -- (1,1);
+         \draw[thick][red] (1,1) -- (1,0);
+         \draw[red] (-0.05,0.5) node {1};
+         \draw[red] (1.05,0.5) node {1};
+         \draw[blue] (0.5,-0.08) node {2};
+         \draw[blue] (0.5,1.08) node {2};
+         \draw[green] (0.35,0.25) node {3};
+         \draw[green] (0.35,0.75) node {3};
+         \filldraw [black] (0,0) circle (1pt)
+         (0,1) circle (1pt)
+         (1,1) circle (1pt)
+         (1,0) circle (1pt);
+       \end{tikzpicture}
+     }
+   }
+   \only<2>{
+     \begin{itemize}
+     \item $d_G(a) = 3$
+     \item $\Delta(G) = 3$
+     \item $\chi'(G) = \Delta(G)$
+     \item $|V(G)| = 4$
+     \item $|E(G)| = 6$
+     \item Clique maximal: $\{a, b, c, d\}$
+     \end{itemize}
+   }
+\end{frame}
+
+\begin{frame}{Problema da Coloração de Aresta}{Exemplo}
+  \centering
+  \begin{tikzpicture}[scale=3]
+         \draw (0, -0.1) node {c};
+         \draw (1, -0.1) node {d};
+         \draw (0, 1.1) node {a};
+         \draw (1, 1.1) node {b};
+         %\draw[very thick,->] (-0.4,0.5) -- (-0.2,0.5);
+         \draw[thick,dotted] (0,0) -- (0,1);
+         \draw[thick,dotted] (0,0) -- (1,1);
+         \draw[thick,dotted] (0,0) -- (1,0);
+         \draw[thick] (0,1) -- (1,0);
+         \draw[thick] (0,1) -- (1,1);
+         \draw[thick] (1,1) -- (1,0);
+         \filldraw [red] (0,1) circle (1pt)
+         (1,1) circle (1pt)
+         (1,0) circle (1pt);
+         \filldraw (0,0) circle (1pt);
+  \end{tikzpicture}
+  \begin{itemize}
+  \item $N_G(c) = \{a, b, d\}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Problema da Coloração de Aresta}{Exemplo}
+  \centering
+  \begin{tikzpicture}[scale=3]
+         \draw (0, -0.1) node {c};
+         \draw (1, -0.1) node {d};
+         \draw (0, 1.1) node {a};
+         \draw (1, 1.1) node {b};
+         %\draw[very thick,->] (-0.4,0.5) -- (-0.2,0.5);
+         \draw[thick,dotted] (0,0) -- (0,1);
+         \draw[thick,dotted] (0,0) -- (1,1);
+         \draw[thick,dotted] (0,0) -- (1,0);
+         \draw[thick] (0,1) -- (1,0);
+         \draw[thick] (0,1) -- (1,1);
+         \draw[thick] (1,1) -- (1,0);
+         \filldraw [red] (0,1) circle (1pt)
+         (1,1) circle (1pt)
+         (1,0) circle (1pt)
+         (0,0) circle (1pt);
+  \end{tikzpicture}
+  \begin{itemize}
+  \item $N_G[c] = \{a, b, c, d\}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Problema da Coloração de Arestas}{Resultados Conhecidos}
+  \blfootnote{Vizing, V. G. On an estimate of
+        the chromatic class of a $p$-graph. Diskret. Analiz. 1964.}\begin{thm}[Teorema de Vizing]
+    $\chi'(G) \leq \Delta(G) + 1$
+  \end{thm}
+  \begin{itemize}
+  \item Classe 1: $\chi'(G) = \Delta(G)$
+  \item Classe 2: $\chi'(G) = \Delta(G) + 1$
+  \end{itemize}
+  \centering
+  \vspace{0.2in}
+  \only<2>{
+    $\lfloor\frac{|V(G)|}{2}\rfloor$
+  }
+  \only<3>{
+    $|E(G)| > \Delta(G)\lfloor\frac{|V(G)|}{2}\rfloor$
+  }
+\end{frame}
+
+
+\begin{frame}{Problema da Coloração de Arestas}{Resultados conhecidos}
+  \begin{itemize}
+  \item { NP-Completo\footnote{Holyer,~I. (1981)} }
+  \only<2->{
+  \item { Conjectura dos Grafos Sobrecarregados\footnote{Do inglês,
+      \emph{Overfull Conjecture}. Chetwynd,~A.~G. e
+      Hilton,~A.~J.~W. (1986)} }
+  }
+  \end{itemize}
+  \vspace{0.5in}
+  \only<3>{
+    \begin{conj}[Conjectura dos Grafos Sobrecarregados]
+      Um grafo $G$ com $\Delta(G) > |V(G)| /
+      3$ tem $\chi'(G) = \Delta + 1$ se e somente se G tem um subgrafo
+      $H$ sobrecarregado e $\Delta(G) = \Delta(H)$.
+    \end{conj}
+  }
+\end{frame}
+
+
+\section{Grafos arco-circulares}
+
+% You can reveal the parts of a slide one at a time
+% with the \pause command:
+\begin{frame}{Grafos arco-circulares}{Definição}
+  \begin{itemize}
+  \item { Grafo de arcos sobre uma circunferência }
+  \end{itemize}
+  \vspace{0.1in}
+  \center{
+    \only<1>{
+      \begin{tikzpicture}[scale=1.3]
+        \draw[dotted] (0,0) circle (1);
+        \draw[thick] (1.2,0) arc (0:100:1.2);
+        \draw[thick] (-1.3,0) arc (180:80:1.3);
+        \draw[thick] (0.4788,1.3155) arc (70:130:1.4);
+        \draw[thick] (-1.3658, 0.4788) arc (160:380:1.4);
+        \draw[thick] (-0.6, 1.0392) arc (120:200:1.2);
+      \end{tikzpicture}
+    }
+    \only<2->{
+      \begin{tikzpicture}[scale=1.3]
+        \draw[dotted] (0,0) circle (1);
+        \draw[thick] (1.2,0) arc (0:100:1.2);
+        \draw[thick] (-1.3,0) arc (180:80:1.3);
+        \draw[thick] (0.4788,1.3155) arc (70:130:1.4);
+        \draw[thick] (-1.3658, 0.4788) arc (160:380:1.4);
+        \draw[thick] (-0.6, 1.0392) arc (120:200:1.2);
+        \draw (0, -1.2) node {d};
+        \draw (-0.3, 1.6) node {a};
+        \draw (1, 1) node {b};
+        \draw (-1.2, 0.9) node {c};
+        \draw (-1, 0.3) node {e};
+        
+      \end{tikzpicture}
+    }
+    \only<2->{
+      \begin{tikzpicture}[scale=0.7]
+        \draw[very thick,->] (-2,0) -- (-1,0);
+        \clip (-1,-3) rectangle (5, 1.5);
+        \coordinate (A) at (0,0);
+        \coordinate (B) at (1,0);
+        \coordinate (C) at (2,0);
+        \coordinate (E) at (3,0);
+        \coordinate (D) at (4,0);
+        \begin{scope}[thick]
+          %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+          %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+          \draw (A) -- (D);
+          \draw[] (A) to [bend left=90] (C);
+          \draw[] (C) to [bend left=90] (D);
+          \draw[] (B) to [bend left=90] (E);
+          \draw[] (A) to [bend right=90] (D);
+          \filldraw[] (A) circle(2pt);
+          \filldraw[] (B) circle(2pt);
+          \filldraw[] (C) circle(2pt);
+          \filldraw[] (E) circle(2pt);
+          \filldraw[] (D) circle(2pt);
+          %\draw (A) node {1};
+          \draw (-0.3,0) node {a};
+          \draw (1,-0.4) node {b};
+          \draw (2, -0.5) node {c};
+          \draw (3, -0.4) node {d};
+          \draw (4.3, 0) node {e};
+        \end{scope}
+        %\clip (-0.5,-0.5) rectangle (1.5, 1.5);
+        %\begin{scope}[thick]
+        %  \draw (0,0) -- (0,1) -- (1,1) -- (1,0) -- (0,0);
+        %  \draw (1,0) -- (0,1);
+        %  \draw (1,0.5) -- (0,1);
+        %\end{scope}
+        %\draw[very thick,->] (-0.4,0.5) -- (-0.2,0.5);
+        %\filldraw[yellow] (0,0) circle(1pt);
+        %\filldraw[green] (0,1) circle(1pt);
+        %\filldraw[brown] (1,1) circle(1pt);
+        %\filldraw[blue] (1,0.5) circle(1pt);
+        %\filldraw[red] (1,0) circle(1pt);
+      \end{tikzpicture}
+    }
+  }
+  \only<3->{
+    \begin{itemize}
+    \item Arco-circular próprio: nenhum arco contem totalmente outro
+    \item Arco-circular unitário: todos os arcos possuem o mesmo tamanho
+    \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}{Pesquisa}
+  \begin{itemize}
+    \item Arco-circulares próprios com grau máximo ímpar
+  \end{itemize}
+\end{frame}
+
+% Placing a * after \section means it will not show in the
+% outline or table of contents.
+% All of the following is optional and typically not needed. 
+%\appendix
+\section{Resultados}
+
+\begin{frame}
+  \begin{thm}Se $G$ é a união de dois grafos $L$ e $R$ não-vazios tais que $V(L) \cap V(R) = \{u\}$, então $\chi'(G) = max$\{$\chi'(L)$, $\chi'(R)$,
+  $d_L(u) + d_R(u)$\}.\label{uniao}\end{thm}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[scale=1]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \begin{scope}[thick]
+      \draw[] (A) -- (F);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (D) to [bend left=90] (F);
+      \filldraw[] (A) circle(2pt);
+      \draw (2, 1.4) node {2};
+      \draw (1, -0.3) node {1};
+      \filldraw[] (B) circle(2pt);
+      \draw (3, -0.3) node {3};
+      \draw (4, 1.4) node {2};
+      \draw (5, 2) node {0};
+      \filldraw[] (C) circle(2pt);
+      \draw (5, -0.3) node {0};
+      \draw (6, 1.4) node {1};
+      \filldraw[] (D) circle(2pt);
+      \draw (7, -0.3) node {3};
+      \draw (8, 1.4) node {1};
+      \filldraw[] (E) circle(2pt);
+      \draw (9, -0.3) node {2};
+      \filldraw[] (F) circle(2pt);
+    \end{scope}
+  \end{tikzpicture}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}}
+  \end{figure}
+  $\chi'(G) = 4$
+\end{frame}
+
+
+\begin{frame}
+  \resizebox{\textwidth}{!}{%
+    \begin{minipage}{2\textwidth}
+  \begin{tikzpicture}[]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (B1) at (-2,0);
+    \coordinate (C1) at (-4,0);
+    \coordinate (D1) at (-6,0);
+    \coordinate (E1) at (-8,0);
+    \coordinate (F1) at (-10,0);
+    \begin{scope}[thick]
+      \draw[] (F1) -- (F);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (D) to [bend left=90] (F);
+      \draw[] (A) to [bend right=90] (C1);
+      \draw[] (B1) to [bend right=90] (D1);
+      \draw[] (B1) to [bend right=90] (E1);
+      \draw[] (C1) to [bend right=90] (E1);
+      \draw[] (D1) to [bend right=90] (F1);
+      \filldraw[] (A) circle(2pt);
+      \draw (2, 1.4) node {2};
+      \draw (1, -0.3) node {1};
+      \filldraw[] (B) circle(2pt);
+      \draw (3, -0.3) node {3};
+      \draw (4, 1.4) node {2};
+      \draw (5, 2) node {0};
+      \filldraw[] (C) circle(2pt);
+      \draw (5, -0.3) node {0};
+      \draw (6, 1.4) node {1};
+      \filldraw[] (D) circle(2pt);
+      \draw (7, -0.3) node {3};
+      \draw (8, 1.4) node {1};
+      \filldraw[] (E) circle(2pt);
+      \draw (9, -0.3) node {2};
+      \filldraw[] (F) circle(2pt);
+      \draw (-2, 1.4) node {2};
+      \draw (-1, -0.3) node {1};
+      \filldraw[] (B1) circle(2pt);
+      \draw (-3, -0.3) node {3};
+      \draw (-4, 1.4) node {2};
+      \draw (-5, 2) node {0};
+      \filldraw[] (C1) circle(2pt);
+      \draw (-5, -0.3) node {0};
+      \draw (-6, 1.4) node {1};
+      \filldraw[] (D1) circle(2pt);
+      \draw (-7, -0.3) node {3};
+      \draw (-8, 1.4) node {1};
+      \filldraw[] (E1) circle(2pt);
+      \draw (-9, -0.3) node {2};
+      \filldraw[] (F1) circle(2pt);
+      %\draw [decorate,decoration={brace,amplitude=10pt},xshift=-4pt,yshift=0pt] (0.5,0.5) -- (0.5,5.0) node [black,midway,xshift=-0.6cm] {\footnotesize $P_1$};
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (-10, -1) -- (0,-1);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (0, -1) -- (10,-1);
+      \draw (-5, -1.8) node {L};
+      \draw (5, -1.8) node {R};
+    \end{scope}
+  \end{tikzpicture}
+  \end{minipage}}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}}
+\end{frame}
+
+\begin{frame}
+  \resizebox{\textwidth}{!}{%
+    \begin{minipage}{2\textwidth}
+  \begin{tikzpicture}[]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (B1) at (-2,0);
+    \coordinate (C1) at (-4,0);
+    \coordinate (D1) at (-6,0);
+    \coordinate (E1) at (-8,0);
+    \coordinate (F1) at (-10,0);
+    \begin{scope}[thick]
+      \draw[] (F1) -- (F);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (D) to [bend left=90] (F);
+      \draw[] (A) to [bend right=90] (C1);
+      \draw[] (B1) to [bend right=90] (D1);
+      \draw[] (B1) to [bend right=90] (E1);
+      \draw[] (C1) to [bend right=90] (E1);
+      \draw[] (D1) to [bend right=90] (F1);
+      \filldraw[] (A) circle(2pt);
+      \draw (2, 1.4) node {2};
+      \draw (1, -0.3) node {1};
+      \filldraw[] (B) circle(2pt);
+      \draw (3, -0.3) node {3};
+      \draw (4, 1.4) node {2};
+      \draw (5, 2) node {0};
+      \filldraw[] (C) circle(2pt);
+      \draw (5, -0.3) node {0};
+      \draw (6, 1.4) node {1};
+      \filldraw[] (D) circle(2pt);
+      \draw (7, -0.3) node {3};
+      \draw (8, 1.4) node {1};
+      \filldraw[] (E) circle(2pt);
+      \draw (9, -0.3) node {2};
+      \filldraw[] (F) circle(2pt);
+      \draw (-2, 1.4) node {2};
+      \draw (-1, -0.3) node {1};
+      \filldraw[] (B1) circle(2pt);
+      \draw (-3, -0.3) node {3};
+      \draw (-4, 1.4) node {2};
+      \draw (-5, 2) node {0};
+      \filldraw[] (C1) circle(2pt);
+      \draw (-5, -0.3) node {0};
+      \draw (-6, 1.4) node {1};
+      \filldraw[] (D1) circle(2pt);
+      \draw (-7, -0.3) node {3};
+      \draw (-8, 1.4) node {1};
+      \filldraw[] (E1) circle(2pt);
+      \draw (-9, -0.3) node {2};
+      \filldraw[] (F1) circle(2pt);
+      %\draw [decorate,decoration={brace,amplitude=10pt},xshift=-4pt,yshift=0pt] (0.5,0.5) -- (0.5,5.0) node [black,midway,xshift=-0.6cm] {\footnotesize $P_1$};
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (-10, -1) -- (0,-1);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (0, -1) -- (10,-1);
+      \draw (-5, -1.8) node {L \{0, 1\}};
+      \draw (5, -1.8) node {R \{2, 3\}};
+    \end{scope}
+  \end{tikzpicture}
+  \end{minipage}}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}}
+\end{frame}
+
+\begin{frame}
+  \resizebox{\textwidth}{!}{%
+    \begin{minipage}{2\textwidth}
+  \begin{tikzpicture}[]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (B1) at (-2,0);
+    \coordinate (C1) at (-4,0);
+    \coordinate (D1) at (-6,0);
+    \coordinate (E1) at (-8,0);
+    \coordinate (F1) at (-10,0);
+    \begin{scope}[thick]
+      \draw[] (F1) -- (F);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (D) to [bend left=90] (F);
+      \draw[color=red] (A) to [bend right=90] (C1);
+      \draw[] (B1) to [bend right=90] (D1);
+      \draw[] (B1) to [bend right=90] (E1);
+      \draw[] (C1) to [bend right=90] (E1);
+      \draw[] (D1) to [bend right=90] (F1);
+      \filldraw[] (A) circle(2pt);
+      \draw (2, 1.4) node {2};
+      \draw (1, -0.3) node {1};
+      \filldraw[] (B) circle(2pt);
+      \draw (3, -0.3) node {3};
+      \draw (4, 1.4) node {2};
+      \draw (5, 2) node {0};
+      \filldraw[] (C) circle(2pt);
+      \draw (5, -0.3) node {0};
+      \draw (6, 1.4) node {1};
+      \filldraw[] (D) circle(2pt);
+      \draw (7, -0.3) node {3};
+      \draw (8, 1.4) node {1};
+      \filldraw[] (E) circle(2pt);
+      \draw (9, -0.3) node {2};
+      \filldraw[] (F) circle(2pt);
+      \draw (-2, 1.4) node {2};
+      \draw (-1, -0.3) node {1};
+      \filldraw[] (B1) circle(2pt);
+      \draw (-3, -0.3) node {3};
+      \draw (-4, 1.4) node {2};
+      \draw (-5, 2) node {0};
+      \filldraw[] (C1) circle(2pt);
+      \draw (-5, -0.3) node {0};
+      \draw (-6, 1.4) node {1};
+      \filldraw[] (D1) circle(2pt);
+      \draw (-7, -0.3) node {3};
+      \draw (-8, 1.4) node {1};
+      \filldraw[] (E1) circle(2pt);
+      \draw (-9, -0.3) node {2};
+      \filldraw[] (F1) circle(2pt);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (-10, -1) -- (0,-1);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (0, -1) -- (10,-1);
+      \draw (-5, -1.8) node {L \{0, 1\}};
+      \draw (5, -1.8) node {R \{2, 3\}};
+    \end{scope}
+  \end{tikzpicture}
+  \end{minipage}}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}}
+\end{frame}
+
+\begin{frame}
+  \resizebox{\textwidth}{!}{%
+    \begin{minipage}{2\textwidth}
+  \begin{tikzpicture}[]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (B1) at (-2,0);
+    \coordinate (C1) at (-4,0);
+    \coordinate (D1) at (-6,0);
+    \coordinate (E1) at (-8,0);
+    \coordinate (F1) at (-10,0);
+    \begin{scope}[thick]
+      \draw[] (F1) -- (F);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (D) to [bend left=90] (F);
+      \draw[] (A) to [bend right=90] (C1);
+      \draw[] (B1) to [bend right=90] (D1);
+      \draw[] (B1) to [bend right=90] (E1);
+      \draw[] (C1) to [bend right=90] (E1);
+      \draw[] (D1) to [bend right=90] (F1);
+      \filldraw[] (A) circle(2pt);
+      \draw (2, 1.4) node {2};
+      \draw (1, -0.3) node {1};
+      \filldraw[] (B) circle(2pt);
+      \draw (3, -0.3) node {3};
+      \draw (4, 1.4) node {2};
+      \draw (5, 2) node {0};
+      \filldraw[] (C) circle(2pt);
+      \draw (5, -0.3) node {0};
+      \draw (6, 1.4) node {1};
+      \filldraw[] (D) circle(2pt);
+      \draw (7, -0.3) node {3};
+      \draw (8, 1.4) node {1};
+      \filldraw[] (E) circle(2pt);
+      \draw (9, -0.3) node {2};
+      \filldraw[] (F) circle(2pt);
+
+      \draw[color=blue] (-2, 1.4) node {0};
+      \draw (-1, -0.3) node {1};
+      \filldraw[] (B1) circle(2pt);
+      \draw (-3, -0.3) node {3};
+      \draw[color=blue] (-4, 1.4) node {0};
+      \draw[color=red] (-5, 2) node {2};
+      \filldraw[] (C1) circle(2pt);
+      \draw[color=red] (-5, -0.3) node {2};
+      \draw (-6, 1.4) node {1};
+      \filldraw[] (D1) circle(2pt);
+      \draw (-7, -0.3) node {3};
+      \draw (-8, 1.4) node {1};
+      \filldraw[] (E1) circle(2pt);
+      \draw[color=blue] (-9, -0.3) node {0};
+      \filldraw[] (F1) circle(2pt);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (-10, -1) -- (0,-1);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (0, -1) -- (10,-1);
+      \draw (-5, -1.8) node {L \{0, 1\}};
+      \draw (5, -1.8) node {R \{2, 3\}};
+    \end{scope}
+  \end{tikzpicture}
+  \end{minipage}}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}} 
+\end{frame}
+
+\begin{frame}
+  \resizebox{\textwidth}{!}{%
+    \begin{minipage}{2\textwidth}
+  \begin{tikzpicture}[]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (B1) at (-2,0);
+    \coordinate (C1) at (-4,0);
+    \coordinate (D1) at (-6,0);
+    \coordinate (E1) at (-8,0);
+    \coordinate (F1) at (-10,0);
+    \begin{scope}[thick]
+      \draw[] (F1) -- (F);
+      \draw[color=red] (A) -- (B1);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (D) to [bend left=90] (F);
+      \draw[] (A) to [bend right=90] (C1);
+      \draw[] (B1) to [bend right=90] (D1);
+      \draw[] (B1) to [bend right=90] (E1);
+      \draw[] (C1) to [bend right=90] (E1);
+      \draw[] (D1) to [bend right=90] (F1);
+      \filldraw[] (A) circle(2pt);
+      \draw (2, 1.4) node {2};
+      \draw (1, -0.3) node {1};
+      \filldraw[] (B) circle(2pt);
+      \draw (3, -0.3) node {3};
+      \draw (4, 1.4) node {2};
+      \draw (5, 2) node {0};
+      \filldraw[] (C) circle(2pt);
+      \draw (5, -0.3) node {0};
+      \draw (6, 1.4) node {1};
+      \filldraw[] (D) circle(2pt);
+      \draw (7, -0.3) node {3};
+      \draw (8, 1.4) node {1};
+      \filldraw[] (E) circle(2pt);
+      \draw (9, -0.3) node {2};
+      \filldraw[] (F) circle(2pt);
+
+      \draw (-2, 1.4) node {0};
+      \draw (-1, -0.3) node {1};
+      \filldraw[] (B1) circle(2pt);
+      \draw (-3, -0.3) node {3};
+      \draw (-4, 1.4) node {0};
+      \draw (-5, 2) node {2};
+      \filldraw[] (C1) circle(2pt);
+      \draw (-5, -0.3) node {2};
+      \draw (-6, 1.4) node {1};
+      \filldraw[] (D1) circle(2pt);
+      \draw (-7, -0.3) node {3};
+      \draw (-8, 1.4) node {1};
+      \filldraw[] (E1) circle(2pt);
+      \draw (-9, -0.3) node {0};
+      \filldraw[] (F1) circle(2pt);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (-10, -1) -- (0,-1);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (0, -1) -- (10,-1);
+      \draw (-5, -1.8) node {L \{0, 1\}};
+      \draw (5, -1.8) node {R \{2, 3\}};
+    \end{scope}
+  \end{tikzpicture}
+  \end{minipage}}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}} 
+\end{frame}
+
+\begin{frame}
+  \resizebox{\textwidth}{!}{%
+    \begin{minipage}{2\textwidth}
+  \begin{tikzpicture}[]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (B1) at (-2,0);
+    \coordinate (C1) at (-4,0);
+    \coordinate (D1) at (-6,0);
+    \coordinate (E1) at (-8,0);
+    \coordinate (F1) at (-10,0);
+    \begin{scope}[thick]
+      \draw[] (F1) -- (F);
+      %\draw[color=red] (A) -- (B);
+      \draw[color=red] (A) to [bend left=90] (C);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (D) to [bend left=90] (F);
+      \draw[] (A) to [bend right=90] (C1);
+      \draw[] (B1) to [bend right=90] (D1);
+      \draw[] (B1) to [bend right=90] (E1);
+      \draw[] (C1) to [bend right=90] (E1);
+      \draw[] (D1) to [bend right=90] (F1);
+      \filldraw[] (A) circle(2pt);
+      \draw (2, 1.4) node {2};
+      \draw (1, -0.3) node {1};
+      \filldraw[] (B) circle(2pt);
+      \draw (3, -0.3) node {3};
+      \draw (4, 1.4) node {2};
+      \draw (5, 2) node {0};
+      \filldraw[] (C) circle(2pt);
+      \draw (5, -0.3) node {0};
+      \draw (6, 1.4) node {1};
+      \filldraw[] (D) circle(2pt);
+      \draw (7, -0.3) node {3};
+      \draw (8, 1.4) node {1};
+      \filldraw[] (E) circle(2pt);
+      \draw (9, -0.3) node {2};
+      \filldraw[] (F) circle(2pt);
+
+      \draw (-2, 1.4) node {0};
+      \draw (-1, -0.3) node {1};
+      \filldraw[] (B1) circle(2pt);
+      \draw (-3, -0.3) node {3};
+      \draw (-4, 1.4) node {0};
+      \draw (-5, 2) node {2};
+      \filldraw[] (C1) circle(2pt);
+      \draw (-5, -0.3) node {2};
+      \draw (-6, 1.4) node {1};
+      \filldraw[] (D1) circle(2pt);
+      \draw (-7, -0.3) node {3};
+      \draw (-8, 1.4) node {1};
+      \filldraw[] (E1) circle(2pt);
+      \draw (-9, -0.3) node {0};
+      \filldraw[] (F1) circle(2pt);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (-10, -1) -- (0,-1);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (0, -1) -- (10,-1);
+      \draw (-5, -1.8) node {L \{0, 1\}};
+      \draw (5, -1.8) node {R \{2, 3\}};
+    \end{scope}
+  \end{tikzpicture}
+  \end{minipage}}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}} 
+\end{frame}
+
+\begin{frame}
+  \resizebox{\textwidth}{!}{%
+    \begin{minipage}{2\textwidth}
+  \begin{tikzpicture}[]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (B1) at (-2,0);
+    \coordinate (C1) at (-4,0);
+    \coordinate (D1) at (-6,0);
+    \coordinate (E1) at (-8,0);
+    \coordinate (F1) at (-10,0);
+    \begin{scope}[thick]
+      \draw[] (F1) -- (F);
+      \draw[color=red] (A) -- (B);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (D) to [bend left=90] (F);
+      \draw[] (A) to [bend right=90] (C1);
+      \draw[] (B1) to [bend right=90] (D1);
+      \draw[] (B1) to [bend right=90] (E1);
+      \draw[] (C1) to [bend right=90] (E1);
+      \draw[] (D1) to [bend right=90] (F1);
+      \filldraw[] (A) circle(2pt);
+      \draw (2, 1.4) node {2};
+      \draw (1, -0.3) node {1};
+      \filldraw[] (B) circle(2pt);
+      \draw (3, -0.3) node {3};
+      \draw (4, 1.4) node {2};
+      \draw (5, 2) node {0};
+      \filldraw[] (C) circle(2pt);
+      \draw (5, -0.3) node {0};
+      \draw (6, 1.4) node {1};
+      \filldraw[] (D) circle(2pt);
+      \draw (7, -0.3) node {3};
+      \draw (8, 1.4) node {1};
+      \filldraw[] (E) circle(2pt);
+      \draw (9, -0.3) node {2};
+      \filldraw[] (F) circle(2pt);
+
+      \draw (-2, 1.4) node {0};
+      \draw (-1, -0.3) node {1};
+      \filldraw[] (B1) circle(2pt);
+      \draw (-3, -0.3) node {3};
+      \draw (-4, 1.4) node {0};
+      \draw (-5, 2) node {2};
+      \filldraw[] (C1) circle(2pt);
+      \draw (-5, -0.3) node {2};
+      \draw (-6, 1.4) node {1};
+      \filldraw[] (D1) circle(2pt);
+      \draw (-7, -0.3) node {3};
+      \draw (-8, 1.4) node {1};
+      \filldraw[] (E1) circle(2pt);
+      \draw (-9, -0.3) node {0};
+      \filldraw[] (F1) circle(2pt);
+
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (-10, -1) -- (0,-1);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (0, -1) -- (10,-1);
+      \draw (-5, -1.8) node {L \{0, 1\}};
+      \draw (5, -1.8) node {R \{2, 3\}};
+    \end{scope}
+  \end{tikzpicture}
+  \end{minipage}}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}} 
+\end{frame}
+
+\begin{frame}
+  \resizebox{\textwidth}{!}{%
+    \begin{minipage}{2\textwidth}
+  \begin{tikzpicture}[]
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (B1) at (-2,0);
+    \coordinate (C1) at (-4,0);
+    \coordinate (D1) at (-6,0);
+    \coordinate (E1) at (-8,0);
+    \coordinate (F1) at (-10,0);
+    \begin{scope}[thick]
+      \draw[] (F1) -- (F);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (D) to [bend left=90] (F);
+      \draw[] (A) to [bend right=90] (C1);
+      \draw[] (B1) to [bend right=90] (D1);
+      \draw[] (B1) to [bend right=90] (E1);
+      \draw[] (C1) to [bend right=90] (E1);
+      \draw[] (D1) to [bend right=90] (F1);
+      \filldraw[] (A) circle(2pt);
+      \draw (2, 1.4) node {2};
+      \draw[color=blue] (1, -0.3) node {3};
+      \filldraw[] (B) circle(2pt);
+      \draw[color=red] (3, -0.3) node {1};
+      \draw (4, 1.4) node {2};
+      \draw (5, 2) node {0};
+      \filldraw[] (C) circle(2pt);
+      \draw (5, -0.3) node {0};
+      \draw[color=blue] (6, 1.4) node {3};
+      \filldraw[] (D) circle(2pt);
+      \draw[color=red] (7, -0.3) node {1};
+      \draw[color=blue] (8, 1.4) node {3};
+      \filldraw[] (E) circle(2pt);
+      \draw (9, -0.3) node {2};
+      \filldraw[] (F) circle(2pt);
+
+      \draw (-2, 1.4) node {0};
+      \draw (-1, -0.3) node {1};
+      \filldraw[] (B1) circle(2pt);
+      \draw (-3, -0.3) node {3};
+      \draw (-4, 1.4) node {0};
+      \draw (-5, 2) node {2};
+      \filldraw[] (C1) circle(2pt);
+      \draw (-5, -0.3) node {2};
+      \draw (-6, 1.4) node {1};
+      \filldraw[] (D1) circle(2pt);
+      \draw (-7, -0.3) node {3};
+      \draw (-8, 1.4) node {1};
+      \filldraw[] (E1) circle(2pt);
+      \draw (-9, -0.3) node {0};
+      \filldraw[] (F1) circle(2pt);
+
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (-10, -1) -- (0,-1);
+      \draw [decorate,decoration={brace,amplitude=10pt,mirror}]
+      (0, -1) -- (10,-1);
+      \draw (-5, -1.8) node {L \{0, 1\}};
+      \draw (5, -1.8) node {R \{2, 3\}};
+    \end{scope}
+  \end{tikzpicture}
+  \end{minipage}}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}}
+\end{frame}
+
+\begin{frame}
+  \begin{cor}
+    \label{cor}
+    O índice cromático de qualquer grafo é o máximo entre os índices
+    cromáticos de suas componentes biconexas e os graus de suas
+    articulações.
+  \end{cor}
+\end{frame}
+
+\begin{frame}
+  \begin{thm}
+    Se $G$ é um grafo arco-circular próprio com $\Delta(G)$ ímpar e
+    $|V(G)| = k(\Delta(G) + 1),~k \in \mathbb{N}$, então $G$ está na
+    Classe 1.
+  \end{thm}
+\end{frame}
+
+\begin{frame}{Grafos Indiferença}
+  
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[scale=0.8]
+    \coordinate (Ai) at (0,0);
+    \coordinate (Af) at (2,0);
+    \coordinate (Bi) at (1,0.5);
+    \coordinate (Bf) at (3,0.5);
+    \coordinate (Ci) at (1.5,0.8);
+    \coordinate (Cf) at (4,0.8);
+    \coordinate (Ei) at (3.5,0);
+    \coordinate (Ef) at (5,0);
+    \coordinate (A) at (7,0);
+    \coordinate (B) at (9,0);
+    \coordinate (C) at (11,0);
+    \coordinate (E) at (13,0);
+    \begin{scope}[thick]
+      \draw[<->] (-1, -0.3) -- (6, -0.3);
+      \draw (-0.3,0) node {a};
+      \draw (Ai) -- (Af);
+      \draw (0.7,0.5) node {b};
+      \draw (Bi) -- (Bf);
+      \draw (1.2,0.8) node {c};
+      \draw (Ci) -- (Cf);
+      \draw (3.2, 0) node {d};
+      \draw (Ei) -- (Ef);
+      \draw[] (A) -- (E);
+      \draw[] (A) to [bend left=90] (C);
+      \filldraw[] (A) circle(2pt);
+      \draw (7, -0.3) node {a};
+      \filldraw[] (B) circle(2pt);
+      \draw (9, -0.3) node {b};
+      \filldraw[] (C) circle(2pt);
+      \draw (11, -0.3) node {c};
+      \filldraw[] (E) circle(2pt);
+      \draw (13, -0.3) node {d};
+    \end{scope}
+  \end{tikzpicture}
+  %\caption{Um grafo de intervalos e sua representação por intervalos\label{fig:intervalo}}
+\end{figure}
+
+\end{frame}
+
+\begin{frame}{Grafos Indiferença}
+  \begin{definicao}[Pull back]
+  Uma função $f: V(G) \rightarrow V(G')$ é uma \emph{pull back} se:
+  \begin{itemize}
+    \item $f$ é um homomorfismo, ou seja, se $uv \in E(G)$, então
+      $f(u)f(v) \in E(G')$.
+    \item $f$ é injetiva quando restrita a $N_G[u]$.
+  \end{itemize}
+\end{definicao}
+\end{frame}
+
+\begin{frame}{Grafos Indiferença}{Pull back}
+  \begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=1.3]
+      \coordinate (A) at (0,0);
+      \coordinate (B) at (1,0);
+      \coordinate (D) at (2,0);
+      \coordinate (E) at (3,0);
+      \coordinate (C) at (4,0);
+      \coordinate (F) at (6,-1);
+      \coordinate (G) at (6, 1);
+      \coordinate (H) at (8, -1);
+      \coordinate (I) at (8, 1);
+      \begin{scope}[thick]
+        %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+        %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+        \draw (A) -- (C);
+        \draw[] (C) to [bend right=90] (D);
+        \filldraw[] (A) circle(2pt);
+        \filldraw[] (B) circle(2pt);
+        \filldraw[] (C) circle(2pt);
+        \filldraw[] (E) circle(2pt);
+        \filldraw[] (D) circle(2pt);
+        \filldraw[] (F) circle(2pt);
+        \filldraw[] (G) circle(2pt);
+        \filldraw[] (H) circle(2pt);
+        \filldraw[] (I) circle(2pt);
+        \draw (F) -- (G)-- (I) -- (H) -- (F) -- (I);
+        \draw (G) -- (H);
+        %\draw (A) node {1};
+        \draw (0,-0.3) node {0};
+        \draw (1,-0.3) node {1};
+        \draw (2, -0.3) node {2};
+        \draw (3, -0.3) node {$\Delta$};
+        \draw (4, -0.3) node {0};
+        \draw (6,-1.3) node {2};
+        \draw (6, 1.3) node {0};
+        \draw (8,-1.3) node {$\Delta$};
+        \draw (8, 1.3) node {1};
+      \end{scope}
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+\[\lambda(u,v)\footnote{C.~M.~H. de~Figueiredo, J. Meidanis and
+  C.~P. de~Mello. On edge-colouring indifference graphs. 1997.} = \left\{\begin{array}{l}
+(l(u)+l(v))\bmod \Delta(G), \mbox{se} \ 0 \leq l(u),l(v) \leq \Delta(G)-1; \\
+(2l(u)) \bmod \Delta(G), \mbox{se} \ l(v) = \Delta(G); \\
+(2l(v)) \bmod \Delta(G), \mbox{se} \ l(u)=\Delta(G).
+\end{array}
+\right. \]
+\end{frame}
+
+\begin{frame}
+  \resizebox{\textwidth}{!}{%
+    \begin{minipage}{2\textwidth}
+  \begin{tikzpicture}[scale=3]
+    \coordinate (A) at (1,0);
+    \coordinate (B) at (0.5,0.86);
+    \coordinate (C) at (-0.5,0.86);
+    \coordinate (D) at (-1,0);
+    \coordinate (E) at (-0.5,-0.86);
+    \coordinate (F) at (0.5,-0.86);
+    \begin{scope}[thick]
+      \draw (0,0) circle(1);
+      \draw (0.9, 0.55) node {0};
+      \draw (0, 1.05) node {3};
+      \draw (-0.9, 0.55) node {2};
+      \draw (-0.9, -0.55) node {0};
+      \draw (0, -1.05) node {3};
+      \draw (0.9, -0.55) node {1};
+
+      \draw plot [smooth, tension=1.4] coordinates {(A) (0.75, 1.29)
+        (C)};
+      \draw (0.8, 1.32) node {4};
+      %\draw plot [smooth, tension=3] coordinates {(A) (0, 2) (D)};
+      \draw plot [smooth, tension=1.4] coordinates {(B) (-0.75, 1.29)
+        (D)};
+      \draw (-0.8, 1.32) node {1};
+      %\draw plot [smooth, tension=3] coordinates {(B) (-1.73, 1) (E)};
+      \draw plot [smooth, tension=1.4] coordinates {(C) (-1.5, 0) (E)};
+      \draw (-1.55, 0) node {1};
+      %\draw plot [smooth, tension=3] coordinates {(C) (-1.73, -1) (F)};
+      \draw plot [smooth, tension=1.4] coordinates {(D) (-0.75, -1.29)
+        (F)};
+      \draw (-0.8, -1.32) node {4};
+      \draw plot [smooth, tension=3] coordinates {(D) (0, -2) (A)};
+      \draw (0, -2.1) node {3};
+      \draw plot [smooth, tension=1.4] coordinates {(E) (0.75, -1.29)
+        (A)};
+      \draw (0.8, -1.32) node {2};
+      \draw plot [smooth, tension=3] coordinates {(E) (1.73, -1) (B)};
+      \draw (1.8, -1.1) node {4};
+      \draw plot [smooth, tension=1.4] coordinates {(F) (1.5, 0) (B)};
+      \draw (1.55, 0) node {2};
+      \draw plot [smooth, tension=3] coordinates {(F) (1.73, 1) (C)};
+      \draw (1.8, 1.1) node {0};
+      \filldraw[] (A) circle(1pt);
+      \filldraw[] (B) circle(1pt);
+      \filldraw[] (C) circle(1pt);
+      \filldraw[] (D) circle(1pt);
+      \filldraw[] (E) circle(1pt);
+      \filldraw[] (F) circle(1pt);
+      \draw (-3, 2) node {$\Delta(G) = 5$};
+      \draw (-3, 1.5) node {$|V(G)| = 1 \cdot (\Delta(G) + 1) = 6$};
+      \draw (0.9, 0) node {0};
+      \draw (0.5, -0.7) node {1};
+      \draw (-0.5, -0.7) node {2};
+      \draw (-0.9, 0) node {3};
+      \draw (-0.5, 0.7) node {4};
+      \draw (0.5, 0.7) node {$\Delta(G)$};
+      
+    \end{scope}
+  \end{tikzpicture}
+  \end{minipage}}
+  %\caption{Potência de caminho $P_8^3$\label{fig:pnk}}
+\end{frame}
+%\subsection<presentation>*{For Further Reading}
+
+\begin{frame}
+  \begin{lem}
+    Se $G$ é um grafo arco-circular próprio com uma
+    clique maximal $\{u, v\}$, então $G - uv$ é um grafo indiferença.
+  \end{lem}
+\end{frame}
+
+
+\begin{frame}
+  \begin{figure}
+    \begin{tikzpicture}[scale=1.3]
+      \draw[dotted] (0,0) circle (1);
+      \draw[thick] (1.2,0) arc (0:76:1.2);
+      \draw[thick] (-1.3,0) arc (180:80:1.3);
+      \draw[thick] (0.4788,1.3155) arc (70:110:1.4);
+      \draw[thick] (-1.3658, 0.4788) arc (160:380:1.4);
+      \draw[thick] (-0.6, 1.0392) arc (120:200:1.2);
+      \draw (0, -1.2) node {d};
+      \draw (-0.3, 1.6) node {a};
+      \draw (1, 1) node {b};
+      \draw (-1.2, 0.9) node {c};
+      \draw (-1, 0.3) node {e};
+
+      \coordinate (A) at (3,0);
+      \coordinate (B) at (4,0);
+      \coordinate (D) at (5,0);
+      \coordinate (E) at (6,0);
+      \coordinate (C) at (7,0);
+      \begin{scope}[thick]
+        %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+      %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+      \draw (A) -- (C);
+      \draw[] (A) to [bend right=90] (C);
+      \draw[] (C) to [bend right=90] (D);
+      \filldraw[] (A) circle(2pt);
+      \filldraw[] (B) circle(2pt);
+      \filldraw[] (C) circle(2pt);
+      \filldraw[] (E) circle(2pt);
+      \filldraw[] (D) circle(2pt);
+      %\draw (A) node {1};
+      \draw (2.8,0) node {a};
+      \draw (4,-0.3) node {b};
+      \draw (5, -0.3) node {d};
+      \draw (6, -0.3) node {e};
+      \draw (7.2, 0) node {c};
+    \end{scope}
+  \end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \begin{tikzpicture}[scale=1.3]
+      \draw[dotted] (0,0) circle (1);
+      \draw[thick] (1.2,0) arc (0:76:1.2);
+      \draw[thick] (-1.3,0) arc (180:80:1.3);
+      \draw[thick, red] (-0.4446,1.2216) arc (110:80:1.3);
+      \draw[thick] (0.4788,1.3155) arc (70:110:1.4);
+      \draw[thick, red] (0.243,1.3787) arc (80:110:1.4);
+      \draw[thick] (-1.3658, 0.4788) arc (160:380:1.4);
+      \draw[thick] (-0.6, 1.0392) arc (120:200:1.2);
+      \draw (0, -1.2) node {d};
+      \draw (-0.3, 1.6) node {a};
+      \draw (1, 1) node {b};
+      \draw (-1.2, 0.9) node {c};
+      \draw (-1, 0.3) node {e};
+
+      \coordinate (A) at (3,0);
+      \coordinate (B) at (4,0);
+      \coordinate (D) at (5,0);
+      \coordinate (E) at (6,0);
+      \coordinate (C) at (7,0);
+      \begin{scope}[thick]
+        %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+      %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+      \draw (A) -- (C);
+      \draw[red] (A) to [bend right=90] (C);
+      \draw[] (C) to [bend right=90] (D);
+      \filldraw[] (A) circle(2pt);
+      \filldraw[] (B) circle(2pt);
+      \filldraw[] (C) circle(2pt);
+      \filldraw[] (E) circle(2pt);
+      \filldraw[] (D) circle(2pt);
+      %\draw (A) node {1};
+      \draw (2.8,0) node {a};
+      \draw (4,-0.3) node {b};
+      \draw (5, -0.3) node {d};
+      \draw (6, -0.3) node {e};
+      \draw (7.2, 0) node {c};
+    \end{scope}
+  \end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \begin{tikzpicture}[scale=1.3]
+      \draw[dotted] (0,0) circle (1);
+      \draw[thick] (1.2,0) arc (0:76:1.2);
+      \draw[thick] (-1.3,0) arc (180:110:1.3);
+      \draw[thick] (0.4788,1.3155) arc (70:80:1.4);
+      \draw[thick] (-1.3658, 0.4788) arc (160:380:1.4);
+      \draw[thick] (-0.6, 1.0392) arc (120:200:1.2);
+      \draw (0, -1.2) node {d};
+      \draw (0.4, 1.6) node {a'};
+      \draw (1, 1) node {b};
+      \draw (-1.2, 0.9) node {c'};
+      \draw (-1, 0.3) node {e};
+
+      \coordinate (Ai) at (3,0.5);
+      \coordinate (Af) at (3.4,0.5);
+      \coordinate (At) at (3.2, 0.3);
+      \coordinate (Bi) at (3.2,0.7);
+      \coordinate (Bf) at (4.5,0.7);
+      \coordinate (Bt) at (3.85, 0.9);
+      \coordinate (Di) at (4.4,0.5);
+      \coordinate (Df) at (6.2,0.5);
+      \coordinate (Dt) at (5.2, 0.3);
+      \coordinate (Ei) at (5.5,0.7);
+      \coordinate (Ef) at (6.5,0.7);
+      \coordinate (Et) at (6,0.9);
+      \coordinate (Ci) at (6,0.3);
+      \coordinate (Cf) at (7,0.3);
+      \coordinate (Ct) at (6.5,0.5);
+      \begin{scope}[thick]
+        %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+      %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+        \draw[dotted] (3,0) -- (7,0);
+        \draw (Ai) -- (Af);
+        \draw (Bi) -- (Bf);
+        \draw (Ci) -- (Cf);
+        \draw (Di) -- (Df);
+        \draw (Ei) -- (Ef);
+
+      \draw (At) node {a'};
+      \draw (Bt) node {b};
+      \draw (Dt) node {d};
+      \draw (Et) node {e};
+      \draw (Ct) node {c'};
+    \end{scope}
+  \end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \begin{tikzpicture}[scale=1.3]
+      \draw[dotted] (0,0) circle (1);
+      \draw[thick] (1.2,0) arc (0:76:1.2);
+      \draw[thick] (-1.3,0) arc (180:110:1.3);
+      \draw[thick] (0.4788,1.3155) arc (70:80:1.4);
+      \draw[thick] (-1.3658, 0.4788) arc (160:380:1.4);
+      \draw[thick] (-0.6, 1.0392) arc (120:200:1.2);
+      \draw (0, -1.2) node {d};
+      \draw (0.4, 1.6) node {a'};
+      \draw (1, 1) node {b};
+      \draw (-1.2, 0.9) node {c'};
+      \draw (-1, 0.3) node {e};
+
+      \coordinate (A) at (3,0);
+      \coordinate (B) at (4,0);
+      \coordinate (D) at (5,0);
+      \coordinate (E) at (6,0);
+      \coordinate (C) at (7,0);
+      \begin{scope}[thick]
+        %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+      %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+      \draw (A) -- (C);
+      \draw[] (C) to [bend right=90] (D);
+      \filldraw[] (A) circle(2pt);
+      \filldraw[] (B) circle(2pt);
+      \filldraw[] (C) circle(2pt);
+      \filldraw[] (E) circle(2pt);
+      \filldraw[] (D) circle(2pt);
+      %\draw (A) node {1};
+      \draw (2.8,0) node {a'};
+      \draw (4,-0.3) node {b};
+      \draw (5, -0.3) node {d};
+      \draw (6, -0.3) node {e};
+      \draw (7.2, 0) node {c'};
+    \end{scope}
+  \end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}{Definições}
+  \begin{itemize}
+  \item $\mathcal{T}$\only<2->{: arco-circulares próprios com grau
+    máximo ímpar e clique máximal de tamanho 2}
+  \item $G'$\only<3->{: grafos em $\mathcal{T}$ após a remoção da clique maximal}
+  \item \emph{Pull back}
+  \item $K$ blocos
+  \end{itemize}
+  \only<4>{
+    \begin{figure}
+      \begin{tikzpicture}[scale=1.3]
+        \coordinate (A) at (0,0);
+        \coordinate (B) at (1,0);
+        \coordinate (D) at (2,0);
+        \coordinate (E) at (3,0);
+        \coordinate (C) at (4,0);
+        \begin{scope}[thick]
+          %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+          %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+          \draw (A) -- (C);
+          \draw[] (C) to [bend right=90] (D);
+          \filldraw[] (A) circle(2pt);
+          \filldraw[] (B) circle(2pt);
+          \filldraw[] (C) circle(2pt);
+          \filldraw[] (E) circle(2pt);
+          \filldraw[] (D) circle(2pt);
+          %\draw (A) node {1};
+          \draw (0,-0.3) node {0};
+          \draw (1,-0.3) node {1};
+          \draw (2, -0.3) node {2};
+          \draw (3, -0.3) node {$\Delta$};
+          \draw (4, -0.3) node {0};
+        \end{scope}
+      \end{tikzpicture}
+    \end{figure}
+  }
+  \only<5->{
+    \begin{figure}
+      \begin{tikzpicture}[scale=1.3]
+        \coordinate (A) at (0,0);
+        \coordinate (B) at (1,0);
+        \coordinate (D) at (2,0);
+        \coordinate (E) at (3,0);
+        \coordinate (C) at (4,0);
+        \begin{scope}[thick]
+          %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+          %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+          \draw (A) -- (C);
+          \draw[] (C) to [bend right=90] (D);
+          \filldraw[] (A) circle(2pt);
+          \filldraw[] (B) circle(2pt);
+          \filldraw[] (C) circle(2pt);
+          \filldraw[] (E) circle(2pt);
+          \filldraw[] (D) circle(2pt);
+          %\draw (A) node {1};
+          \draw (0,-0.3) node {0};
+          \draw (1,-0.3) node {1};
+          \draw (2, -0.3) node {2};
+          \draw (3, -0.3) node {$\Delta$};
+          \draw (4, -0.3) node {0};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (0, -0.7) -- (3,-0.7);
+          \draw (1.5, -1) node {$B_0$};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (3.5, -0.7) -- (4.5,-0.7);
+          \draw (4, -1) node {$B_1$};
+        \end{scope}
+      \end{tikzpicture}
+    \end{figure}
+  }
+  \only<6>{
+    \begin{flushright}
+      $r = 1$
+    \end{flushright}
+  }
+\end{frame}
+
+\begin{frame}{Observações}{Cor sobrando no primeiro vértice de G'}
+  \only<1>{
+    \begin{figure}
+      \begin{tikzpicture}[scale=1.3]
+        \coordinate (A) at (0,0);
+        \coordinate (B) at (1,0);
+        \coordinate (D) at (2,0);
+        \coordinate (E) at (3,0);
+        \coordinate (C) at (4,0);
+        \begin{scope}[thick]
+          %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+          %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+          \draw (A) -- (C);
+          \draw[] (C) to [bend right=90] (D);
+          \draw[dotted, red] (A) to [bend left=90] (E);
+          \filldraw[] (A) circle(2pt);
+          \filldraw[] (B) circle(2pt);
+          \filldraw[] (C) circle(2pt);
+          \filldraw[] (E) circle(2pt);
+          \filldraw[] (D) circle(2pt);
+          %\draw (A) node {1};
+          \draw (0,-0.3) node {0};
+          \draw (1,-0.3) node {1};
+          \draw (2, -0.3) node {2};
+          \draw (3, -0.3) node {$\Delta$};
+          \draw (4, -0.3) node {0};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (0, -0.7) -- (3,-0.7);
+          \draw (1.5, -1) node {$B_0$};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (3.5, -0.7) -- (4.5,-0.7);
+          \draw (4, -1) node {$B_1$};
+        \end{scope}
+      \end{tikzpicture}
+    \end{figure}
+  }
+  \only<2>{
+    \begin{figure}
+      \begin{tikzpicture}[scale=1.3]
+        \coordinate (A) at (0,0);
+        \coordinate (B) at (1,0);
+        \coordinate (D) at (2,0);
+        \coordinate (E) at (3,0);
+        \coordinate (C) at (4,0);
+        \begin{scope}[thick]
+          %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+          %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+          \draw (A) -- (C);
+          \draw[] (C) to [bend right=90] (D);
+          \draw[dotted, red] (A) to [bend left=90] (E);
+          \draw[dotted, gray] (A) to [bend left=90] (D);
+          \draw[dotted, gray] (B) to [bend left=90] (E);
+          \filldraw[] (A) circle(2pt);
+          \filldraw[] (B) circle(2pt);
+          \filldraw[] (C) circle(2pt);
+          \filldraw[] (E) circle(2pt);
+          \filldraw[] (D) circle(2pt);
+          %\draw (A) node {1};
+          \draw (0,-0.3) node {0};
+          \draw (1,-0.3) node {1};
+          \draw (2, -0.3) node {2};
+          \draw (3, -0.3) node {$\Delta$};
+          \draw (4, -0.3) node {0};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (0, -0.7) -- (3,-0.7);
+          \draw (1.5, -1) node {$B_0$};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (3.5, -0.7) -- (4.5,-0.7);
+          \draw (4, -1) node {$B_1$};
+        \end{scope}
+      \end{tikzpicture}
+    \end{figure}
+  }
+  \only<3->{
+    \begin{figure}
+      \begin{tikzpicture}[scale=1.3]
+        \coordinate (A) at (0,0);
+        \coordinate (B) at (1,0);
+        \coordinate (D) at (2,0);
+        \coordinate (E) at (3,0);
+        \coordinate (C) at (4,0);
+        \begin{scope}[thick]
+          %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+          %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+          \draw (A) -- (C);
+          \draw[] (C) to [bend right=90] (D);
+          \draw[dotted, red] (A) to [bend left=90] (E);
+          \draw[dotted, gray] (A) to [bend left=90] (D);
+          \draw[dotted, gray] (B) to [bend left=90] (E);
+          \draw[dotted, gray] (A) to [bend left=90] (C);
+          \filldraw[] (A) circle(2pt);
+          \filldraw[] (B) circle(2pt);
+          \filldraw[] (C) circle(2pt);
+          \filldraw[] (E) circle(2pt);
+          \filldraw[] (D) circle(2pt);
+          %\draw (A) node {1};
+          \draw (0,-0.3) node {0};
+          \draw (1,-0.3) node {1};
+          \draw (2, -0.3) node {2};
+          \draw (3, -0.3) node {$\Delta$};
+          \draw (4, -0.3) node {0};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (0, -0.7) -- (3,-0.7);
+          \draw (1.5, -1) node {$B_0$};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (3.5, -0.7) -- (4.5,-0.7);
+          \draw (4, -1) node {$B_1$};
+        \end{scope}
+      \end{tikzpicture}
+    \end{figure}
+  }
+  \only<4>{
+    \centering
+    $2 \cdot 0 = 0$ \emph{mod} $\Delta(G)$;
+  }
+\end{frame}
+
+\begin{frame}{Observações}{Cor sobrando no último vértice de G'}
+  \only<1>{
+    \begin{figure}
+      \begin{tikzpicture}[scale=1.3]
+        \coordinate (A) at (0,0);
+        \coordinate (B) at (1,0);
+        \coordinate (D) at (2,0);
+        \coordinate (E) at (3,0);
+        \coordinate (C) at (4,0);
+        \begin{scope}[thick]
+          %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+          %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+          \draw (A) -- (C);
+          \draw[] (C) to [bend right=90] (D);
+          \draw[dotted, red] (B) to [bend left=90] (C);
+          \filldraw[] (A) circle(2pt);
+          \filldraw[] (B) circle(2pt);
+          \filldraw[] (C) circle(2pt);
+          \filldraw[] (E) circle(2pt);
+          \filldraw[] (D) circle(2pt);
+          %\draw (A) node {1};
+          \draw (0,-0.3) node {0};
+          \draw (1,-0.3) node {1};
+          \draw (2, -0.3) node {2};
+          \draw (3, -0.3) node {$\Delta$};
+          \draw (4, -0.3) node {0};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (0, -0.7) -- (3,-0.7);
+          \draw (1.5, -1) node {$B_0$};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (3.5, -0.7) -- (4.5,-0.7);
+          \draw (4, -1) node {$B_1$};
+        \end{scope}
+      \end{tikzpicture}
+    \end{figure}
+  }
+  \only<2>{
+    \begin{figure}
+      \begin{tikzpicture}[scale=1.3]
+        \coordinate (A) at (0,0);
+        \coordinate (B) at (1,0);
+        \coordinate (D) at (2,0);
+        \coordinate (E) at (3,0);
+        \coordinate (C) at (4,0);
+        \begin{scope}[thick]
+          %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+          %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+          \draw (A) -- (C);
+          \draw[] (C) to [bend right=90] (D);
+          \draw[dotted, red] (B) to [bend left=90] (C);
+          \draw[dotted, gray] (B) to [bend left=90] (E);
+          \filldraw[] (A) circle(2pt);
+          \filldraw[] (B) circle(2pt);
+          \filldraw[] (C) circle(2pt);
+          \filldraw[] (E) circle(2pt);
+          \filldraw[] (D) circle(2pt);
+          %\draw (A) node {1};
+          \draw (0,-0.3) node {0};
+          \draw (1,-0.3) node {1};
+          \draw (2, -0.3) node {2};
+          \draw (3, -0.3) node {$\Delta$};
+          \draw (4, -0.3) node {0};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (0, -0.7) -- (3,-0.7);
+          \draw (1.5, -1) node {$B_0$};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (3.5, -0.7) -- (4.5,-0.7);
+          \draw (4, -1) node {$B_1$};
+        \end{scope}
+      \end{tikzpicture}
+    \end{figure}
+  }
+  \only<3->{
+    \begin{figure}
+      \begin{tikzpicture}[scale=1.3]
+        \coordinate (A) at (0,0);
+        \coordinate (B) at (1,0);
+        \coordinate (D) at (2,0);
+        \coordinate (E) at (3,0);
+        \coordinate (C) at (4,0);
+        \begin{scope}[thick]
+          %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+          %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+          \draw (A) -- (C);
+          \draw[] (C) to [bend right=90] (D);
+          \draw[dotted, red] (B) to [bend left=90] (C);
+          \draw[dotted, gray] (B) to [bend left=90] (E);
+          \draw[dotted, gray] (A) to [bend left=90] (C);
+          \filldraw[] (A) circle(2pt);
+          \filldraw[] (B) circle(2pt);
+          \filldraw[] (C) circle(2pt);
+          \filldraw[] (E) circle(2pt);
+          \filldraw[] (D) circle(2pt);
+          %\draw (A) node {1};
+          \draw (0,-0.3) node {0};
+          \draw (1,-0.3) node {1};
+          \draw (2, -0.3) node {2};
+          \draw (3, -0.3) node {$\Delta$};
+          \draw (4, -0.3) node {0};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (0, -0.7) -- (3,-0.7);
+          \draw (1.5, -1) node {$B_0$};
+          \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+          (3.5, -0.7) -- (4.5,-0.7);
+          \draw (4, -1) node {$B_1$};
+        \end{scope}
+      \end{tikzpicture}
+    \end{figure}
+  }
+  \only<4>{
+    \[\left\{\begin{array}{l}
+    0,\qquad\qquad\qquad\qquad\qquad\,\mbox{se} \ r = 0;\\
+    (2 r - 1) \bmod \Delta(G),\quad\quad\ \mbox{se} \ 1 \leq r \leq \Delta(G) - 1; \\
+    \Delta(G) - 2, \quad\quad\quad\quad\quad\quad\ \,\mbox{se} \ r = \Delta(G).
+\end{array}
+\right. \]
+  }
+\end{frame}
+
+\begin{frame}
+  \begin{thm}
+  Se $G \in \mathcal{T}$ e $r = \lceil\frac{\Delta(G)}{2}\rceil$, então $\chi'(G) = \Delta(G)$.
+  \end{thm}
+  \vspace{0.5in}
+  \only<2> {
+    \begin{itemize}
+      \item $2 \lceil\frac{\Delta(G)}{2}\rceil - 1 = 0$ (\emph{mod}
+        $\Delta(G)$)
+    \end{itemize}
+  }
+\end{frame}
+
+\begin{frame}
+\begin{thm}
+  Se $G \in {\cal T}$ e $2 \leq r \leq
+  \lfloor\frac{\Delta(G)}{2}\rfloor$ ou $\lceil\frac{\Delta(G)}{2}\rceil
+  < r \leq \Delta(G) - 1$, então $\chi'(G) = \Delta(G)$.
+\end{thm}
+\vspace{0.5in}
+\only<2> {
+  \begin{figure}
+    \begin{tikzpicture}[scale=1.3]
+      \coordinate (A) at (0,0);
+      \coordinate (B) at (1,0);
+      \coordinate (D) at (2,0);
+      \coordinate (E) at (3,0);
+      \coordinate (C) at (4,0);
+      \coordinate (F) at (5,0);
+      \coordinate (G) at (6,0);
+      \coordinate (H) at (7,0);
+      \begin{scope}[thick]
+        %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+        %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+        \draw (A) -- (H);
+        \draw[] (C) to [bend right=90] (D);
+        \draw[] (E) to [bend left=90] (F);
+        \draw[] (B) to [bend left=90] (C);
+        \draw[] (B) to [bend left=90] (E);
+        \draw[] (D) to [bend left=90] (C);
+        \draw[] (C) to [bend left=90] (G);
+        \draw[] (F) to [bend left=90] (H);
+        \filldraw[] (A) circle(2pt);
+        \filldraw[] (B) circle(2pt);
+        \filldraw[] (C) circle(2pt);
+        \filldraw[] (E) circle(2pt);
+        \filldraw[] (D) circle(2pt);
+        \filldraw[] (F) circle(2pt);
+        \filldraw[] (G) circle(2pt);
+        \filldraw[] (H) circle(2pt);
+        \draw (0,-0.3) node {0};
+        \draw (1,-0.3) node {1};
+        \draw (2, -0.3) node {2};
+        \draw (3, -0.3) node {3};
+        \draw (4, -0.3) node {4};
+        \draw (5, -0.3) node {$\Delta$};
+        \draw (6, -0.3) node {0};
+        \draw (7, -0.3) node {1};
+        \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+        (0, -0.7) -- (5,-0.7);
+        \draw (2.5, -1) node {$B_0$};
+        \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+        (6, -0.7) -- (7,-0.7);
+        \draw (6.5, -1) node {$B_1$};
+      \end{scope}
+    \end{tikzpicture}
+  \end{figure}
+}
+\only<3> {
+    \begin{figure}
+    \begin{tikzpicture}[scale=1.3]
+      \coordinate (A) at (0,0);
+      \coordinate (B) at (1,0);
+      \coordinate (D) at (2,0);
+      \coordinate (E) at (3,0);
+      \coordinate (C) at (4,0);
+      \coordinate (F) at (5,0);
+      \coordinate (G) at (6,0);
+      \coordinate (H) at (7,0);
+      \begin{scope}[thick]
+        %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+        %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+        \draw (A) -- (H);
+        \draw[] (C) to [bend right=90] (D);
+        \draw[] (E) to [bend left=90] (F);
+        \draw[] (B) to [bend left=90] (C);
+        \draw[] (B) to [bend left=90] (E);
+        \draw[] (D) to [bend left=90] (C);
+        \draw[] (C) to [bend left=90] (G);
+        \draw[] (F) to [bend left=90] (H);
+        \filldraw[] (A) circle(2pt);
+        \filldraw[] (B) circle(2pt);
+        \filldraw[] (C) circle(2pt);
+        \filldraw[] (E) circle(2pt);
+        \filldraw[] (D) circle(2pt);
+        \filldraw[] (F) circle(2pt);
+        \filldraw[] (G) circle(2pt);
+        \filldraw[] (H) circle(2pt);
+        \draw (0,-0.3) node {0};
+        \draw (1,-0.3) node {1};
+        \draw (2, -0.3) node {2};
+        \draw[red] (3, -0.3) node {$\Delta$};
+        \draw (4, -0.3) node {4};
+        \draw[red] (5, -0.3) node {3};
+        \draw (6, -0.3) node {0};
+        \draw (7, -0.3) node {1};
+        \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+        (0, -0.7) -- (5,-0.7);
+        \draw (2.5, -1) node {$B_0$};
+        \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+        (6, -0.7) -- (7,-0.7);
+        \draw (6.5, -1) node {$B_1$};
+      \end{scope}
+    \end{tikzpicture}
+  \end{figure}
+}
+\only<4> {
+  \begin{figure}
+    \begin{tikzpicture}[scale=1.3]
+      \coordinate (A) at (0,0);
+      \coordinate (B) at (1,0);
+      \coordinate (D) at (2,0);
+      \coordinate (E) at (3,0);
+      \coordinate (C) at (4,0);
+      \coordinate (F) at (5,0);
+      \coordinate (G) at (6,0);
+      \coordinate (H) at (7,0);
+      \begin{scope}[thick]
+        %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+        %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+        \draw (A) -- (H);
+        \draw[] (C) to [bend right=90] (D);
+        \draw[] (E) to [bend left=90] (F);
+        \draw[] (B) to [bend left=90] (C);
+        \draw[] (B) to [bend left=90] (E);
+        \draw[] (D) to [bend left=90] (C);
+        \draw[] (C) to [bend left=90] (G);
+        \draw[] (F) to [bend left=90] (H);
+        \draw[dotted, gray] (A) to [bend left=90] (F);
+        \draw[dotted, gray] (D) to [bend left=90] (H);
+        \filldraw[] (A) circle(2pt);
+        \filldraw[] (B) circle(2pt);
+        \filldraw[] (C) circle(2pt);
+        \filldraw[] (E) circle(2pt);
+        \filldraw[] (D) circle(2pt);
+        \filldraw[] (F) circle(2pt);
+        \filldraw[] (G) circle(2pt);
+        \filldraw[] (H) circle(2pt);
+        \draw (0,-0.3) node {0};
+        \draw (1,-0.3) node {1};
+        \draw (2, -0.3) node {2};
+        \draw[red] (3, -0.3) node {$\Delta$};
+        \draw (4, -0.3) node {4};
+        \draw[red] (5, -0.3) node {3};
+        \draw (6, -0.3) node {0};
+        \draw (7, -0.3) node {1};
+        \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+        (0, -0.7) -- (5,-0.7);
+        \draw (2.5, -1) node {$B_0$};
+        \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+        (6, -0.7) -- (7,-0.7);
+        \draw (6.5, -1) node {$B_1$};
+      \end{scope}
+    \end{tikzpicture}
+  \end{figure}
+}
+\only<5-> {
+    \begin{figure}
+\begin{tikzpicture}[scale=1.3]
+      \coordinate (A) at (0,0);
+      \coordinate (B) at (1,0);
+      \coordinate (D) at (2,0);
+      \coordinate (E) at (3,0);
+      \coordinate (C) at (4,0);
+      \coordinate (F) at (5,0);
+      \coordinate (G) at (6,0);
+      \coordinate (H) at (7,0);
+      \begin{scope}[thick]
+        %\draw (0.30901699437, 0.95105651629) .. controls (-1.3,1.6)
+        %and (-1.6,0.7) .. (-0.80901699437, -0.58778525229);
+        \draw (A) -- (H);
+        \draw[] (C) to [bend right=90] (D);
+        \draw[] (E) to [bend left=90] (F);
+        \draw[] (B) to [bend left=90] (C);
+        \draw[] (B) to [bend left=90] (E);
+        \draw[] (D) to [bend left=90] (C);
+        \draw[] (C) to [bend left=90] (G);
+        \draw[] (F) to [bend left=90] (H);
+        \filldraw[] (A) circle(2pt);
+        \filldraw[] (B) circle(2pt);
+        \filldraw[] (C) circle(2pt);
+        \filldraw[] (E) circle(2pt);
+        \filldraw[] (D) circle(2pt);
+        \filldraw[] (F) circle(2pt);
+        \filldraw[] (G) circle(2pt);
+        \filldraw[] (H) circle(2pt);
+        \draw (0,-0.3) node {0};
+        \draw (1,-0.3) node {1};
+        \draw (2, -0.3) node {2};
+        \draw[] (3, -0.3) node {$\Delta$};
+        \draw (4, -0.3) node {4};
+        \draw[] (5, -0.3) node {3};
+        \draw (6, -0.3) node {0};
+        \draw (7, -0.3) node {1};
+        \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+        (0, -0.7) -- (5,-0.7);
+        \draw (2.5, -1) node {$B_0$};
+        \draw [decorate,decoration={brace,amplitude=4pt,mirror}]
+        (6, -0.7) -- (7,-0.7);
+        \draw (6.5, -1) node {$B_1$};
+      \end{scope}
+    \end{tikzpicture}
+  \end{figure}
+}
+\only<5>{
+  \centering
+  $2r - 1 = 3 \bmod \Delta(G)$
+}
+\end{frame}
+
+\begin{frame}
+\begin{figure}[h!]
+  \centering
+  \caption{Grafo com 13 vértices, $\Delta(G) = 11$ e sobrecarregado\label{fig:ov1}}
+  \begin{tikzpicture}[scale=0.4]
+    \clip(-1,-7.9) rectangle (25, 6.7);
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (G) at (12,0);
+    \coordinate (H) at (14,0);
+    \coordinate (I) at (16,0);
+    \coordinate (J) at (18,0);
+    \coordinate (K) at (20,0);
+    \coordinate (L) at (22,0);
+    \coordinate (M) at (24,0);
+    \begin{scope}[thick]
+      \draw[] (A) -- (M);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (A) to [bend left=90] (D);
+      \draw[] (A) to [bend left=90] (E);
+      \draw[] (A) to [bend left=90] (F);
+      \draw[] (A) to [bend left=90] (G);
+      \draw[] (A) to [bend left=90] (H);
+      \draw[] (A) to [bend left=90] (I);
+      \draw[] (A) to [bend left=90] (J);
+      \draw[] (A) to [bend left=90] (K);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (B) to [bend left=90] (F);
+      \draw[] (B) to [bend left=90] (G);
+      \draw[] (B) to [bend left=90] (H);
+      \draw[] (B) to [bend left=90] (I);
+      \draw[] (B) to [bend left=90] (J);
+      \draw[] (B) to [bend left=90] (K);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (F);
+      \draw[] (C) to [bend left=90] (G);
+      \draw[] (C) to [bend left=90] (H);
+      \draw[] (C) to [bend left=90] (I);
+      \draw[] (C) to [bend left=90] (J);
+      \draw[] (C) to [bend left=90] (K);
+      \draw[] (D) to [bend left=90] (F);
+      \draw[] (D) to [bend left=90] (G);
+      \draw[] (D) to [bend left=90] (H);
+      \draw[] (D) to [bend left=90] (I);
+      \draw[] (D) to [bend left=90] (J);
+      \draw[] (D) to [bend left=90] (K);
+      \draw[] (E) to [bend left=90] (G);
+      \draw[] (E) to [bend left=90] (H);
+      \draw[] (E) to [bend left=90] (I);
+      \draw[] (E) to [bend left=90] (J);
+      \draw[] (E) to [bend left=90] (K);
+      \draw[] (F) to [bend left=90] (H);
+      \draw[] (F) to [bend left=90] (I);
+      \draw[] (F) to [bend left=90] (J);
+      \draw[] (F) to [bend left=90] (K);
+      \draw[] (G) to [bend left=90] (I);
+      \draw[] (G) to [bend left=90] (J);
+      \draw[] (G) to [bend left=90] (K);
+      \draw[] (H) to [bend left=90] (J);
+      \draw[] (I) to [bend left=90] (K);
+      
+      \draw[] (L) to [bend right=90] (B);
+      \draw[] (L) to [bend right=90] (C);
+      \draw[] (L) to [bend right=90] (D);
+      \draw[] (L) to [bend right=90] (E);
+      \draw[] (L) to [bend right=90] (F);
+      \draw[] (L) to [bend right=90] (G);
+      \draw[] (L) to [bend right=90] (H);
+      \draw[] (L) to [bend right=90] (I);
+      \draw[] (L) to [bend right=90] (J);
+
+      \draw[] (M) to [bend right=270] (A);
+      \filldraw[] (A) circle(2pt);
+      \draw (-0.4, 0) node {0};
+      \filldraw[] (B) circle(2pt);
+      \draw (2, -0.5) node {1};
+      \filldraw[] (C) circle(2pt);
+      \draw (4, -0.5) node {2};
+      \filldraw[] (D) circle(2pt);
+      \draw (6, -0.5) node {3};
+      \filldraw[] (E) circle(2pt);
+      \draw (8, -0.5) node {4};
+      \filldraw[] (F) circle(2pt);
+      \draw (10, -0.5) node {5};
+      \filldraw[] (G) circle(2pt);
+      \draw (12, -0.5) node {6};
+      \filldraw[] (H) circle(2pt);
+      \draw (14, -0.5) node {7};
+      \filldraw[] (I) circle(2pt);
+      \draw (16, -0.5) node {8};
+      \filldraw[] (J) circle(2pt);
+      \draw (18, -0.5) node {9};
+      \filldraw[] (K) circle(2pt);
+      \draw (20, -0.5) node {10};
+      \filldraw[] (L) circle(2pt);
+      \draw (22, -0.5) node {11};
+      \filldraw[] (M) circle(2pt);
+      \draw (24.6, 0) node {12};
+    \end{scope}
+  \end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}[h!]
+  \centering
+  \caption{Grafo com 11 vértices, $\Delta(G) = 5$ e sobrecarregado\label{fig:ov2}}
+  \begin{tikzpicture}[scale=0.5]
+    \clip(-1,-5.9) rectangle (21, 2.7);
+    \coordinate (A) at (0,0);
+    \coordinate (B) at (2,0);
+    \coordinate (C) at (4,0);
+    \coordinate (D) at (6,0);
+    \coordinate (E) at (8,0);
+    \coordinate (F) at (10,0);
+    \coordinate (G) at (12,0);
+    \coordinate (H) at (14,0);
+    \coordinate (I) at (16,0);
+    \coordinate (J) at (18,0);
+    \coordinate (K) at (20,0);
+    \begin{scope}[thick]
+      \draw[] (A) -- (K);
+      \draw[] (A) to [bend left=90] (C);
+      \draw[] (A) to [bend left=90] (D);
+      \draw[] (A) to [bend left=90] (E);
+      \draw[] (B) to [bend left=90] (D);
+      \draw[] (B) to [bend left=90] (E);
+      \draw[] (C) to [bend left=90] (E);
+      \draw[] (F) to [bend right=90] (B);
+      \draw[] (F) to [bend right=90] (C);
+      \draw[] (F) to [bend right=90] (D);
+
+      \draw[] (G) to [bend left=90] (I);
+      \draw[] (G) to [bend left=90] (J);
+      \draw[] (G) to [bend left=90] (K);
+      \draw[] (H) to [bend left=90] (J);
+      \draw[] (H) to [bend left=90] (K);
+      \draw[] (I) to [bend left=90] (K);
+      \draw[] (K) to [bend right=270] (A);
+      \filldraw[] (A) circle(2pt);
+      \draw (-0.4, 0) node {0};
+      \filldraw[] (B) circle(2pt);
+      \draw (2, -0.4) node {1};
+      \filldraw[] (C) circle(2pt);
+      \draw (4, -0.4) node {2};
+      \filldraw[] (D) circle(2pt);
+      \draw (6, -0.4) node {3};
+      \filldraw[] (E) circle(2pt);
+      \draw (8, -0.4) node {4};
+      \filldraw[] (F) circle(2pt);
+      \draw (10, -0.4) node {5};
+      \filldraw[] (G) circle(2pt);
+      \draw (12, -0.4) node {6};
+      \filldraw[] (H) circle(2pt);
+      \draw (14, -0.4) node {7};
+      \filldraw[] (I) circle(2pt);
+      \draw (16, -0.4) node {8};
+      \filldraw[] (J) circle(2pt);
+      \draw (18, -0.4) node {9};
+      \filldraw[] (K) circle(2pt);
+      \draw (20.6, 0) node {10};
+    \end{scope}
+  \end{tikzpicture}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{conj}
+  \label{conj}
+  Um grafo em ${\cal T}$ está na Classe 2, e somente se, é
+  subgrafo-sobrecarregado.
+\end{conj}
+\end{frame}
+
+\section{Conclusão}
+
+\begin{frame}{Resultados obtidos}
+  \begin{itemize}
+    \item Algoritmo eficiente para compor coloração de grafos com
+      articulação, quando se conhece a coloração de suas componentes
+      biconexas;
+    \item Algoritmo eficiente para coloração dos grafos arco-circulares
+      próprios com ordem múltipla de $\Delta(G) + 1$ e $\Delta(G)$ ímpar;
+    \item Algoritmo eficiente para coloração dos grafos arco-circulares
+      próprios de $\Delta(G)$ ímpar e clique maximal de tamanho 2,
+      quando $r \not\in \{1, \Delta(G)\}$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Trabalhos Futuros}
+  \begin{itemize}
+  \item Coloração dos grafos arco-circulares próprios com clique maximal
+    de tamanho 2.
+  \item Conjectura proposta.
+  \item NP-Completude.
+  \item Aplicação do Teorema \ref{uniao} para melhorar eficiência de algoritmos.
+  \item Clique maximal de tamanho arbitrário.
+  \end{itemize}
+\end{frame}
+
+\end{document}
+
+
