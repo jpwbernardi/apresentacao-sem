@@ -131,7 +131,7 @@
 %\subsection{First Subsection}
 
 \begin{frame}{Problema da Coloração de Aresta}{Exemplo}
-   \center{
+   \begin{center}
      \only<1>{
        \begin{tikzpicture}[scale=3]
          \draw[thick] (0,0) -- (0,1);
@@ -175,7 +175,7 @@
          (1,0) circle (1pt);
        \end{tikzpicture}
      }
-   }
+   \end{center}
    \only<2>{
      \begin{itemize}
      \item $d_G(a) = 3$
@@ -183,9 +183,59 @@
      \item $\chi'(G) = \Delta(G)$
      \item $|V(G)| = 4$
      \item $|E(G)| = 6$
-     \item Clique maximal: $\{a, b, c, d\}$
+     %\item Clique maximal: $\{a, b, c, d\}$
      \end{itemize}
    }
+\end{frame}
+
+\begin{frame}{Problema da Coloração de Aresta}{Exemplo}
+   \center{
+     \only<1>{
+       \begin{tikzpicture}[scale=3]
+         \draw[thick] (0,0) -- (0,1);
+         \draw[thick] (0,0) -- (1,1);
+         \draw[thick] (0,0) -- (1,0);
+         \draw[thick] (0,1) -- (1,0);
+         \draw[thick] (0,1) -- (1,1);
+         \draw[thick] (1,1) -- (1,0);
+         \filldraw [black] (0,0) circle (1pt)
+         (0,1) circle (1pt)
+         (1,1) circle (1pt)
+         (1,0) circle (1pt);
+                  \draw (0, -0.1) node {c};
+         \draw (1, -0.1) node {d};
+         \draw (0, 1.1) node {a};
+         \draw (1, 1.1) node {b};
+       \end{tikzpicture}
+     }
+     \only<2>{
+       \begin{tikzpicture}[scale=3]
+         \draw (0, -0.1) node {c};
+         \draw (1, -0.1) node {d};
+         \draw (0, 1.1) node {a};
+         \draw (1, 1.1) node {b};
+         %\draw[very thick,->] (-0.4,0.5) -- (-0.2,0.5);
+         \draw[thick] (0,0) -- (0,1);
+         \draw[thick] (0,0) -- (1,1);
+         \draw[thick] (0,0) -- (1,0);
+         \draw[thick] (0,1) -- (1,0);
+         \draw[thick] (0,1) -- (1,1);
+         \draw[thick] (1,1) -- (1,0);
+         \filldraw [black] (0,0) circle (1pt)
+         (0,1) circle (1pt)
+         (1,1) circle (1pt)
+         (1,0) circle (1pt);
+       \end{tikzpicture}
+     }
+   }
+   \begin{itemize}
+   \item Cliques: $\{a, b\}$, $\{a, c\}$, $\{a, d\}$, $\{b, c\}$, $\{b,
+     d\}$, $\{c, d\}$, $\{a, b, c\}$, $\{a, b, d\}$, $\{a, c, d\}$,
+     $\dotso$, $\{a, b, c, d\}$.
+    \only<2>{
+    \item Clique maximal: $\{a, b, c, d\}$
+    }
+   \end{itemize}
 \end{frame}
 
 \begin{frame}{Problema da Coloração de Aresta}{Exemplo}
@@ -236,7 +286,7 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Problema da Coloração de Arestas}{Resultados Conhecidos}
+\begin{frame}{Problema da Coloração de Arestas}{Resultados conhecidos}
   \blfootnote{Vizing, V. G. On an estimate of
         the chromatic class of a $p$-graph. Diskret. Analiz. 1964.}\begin{thm}[Teorema de Vizing]
     $\chi'(G) \leq \Delta(G) + 1$
@@ -245,16 +295,39 @@
   \item Classe 1: $\chi'(G) = \Delta(G)$
   \item Classe 2: $\chi'(G) = \Delta(G) + 1$
   \end{itemize}
-  \centering
-  \vspace{0.2in}
-  \only<2>{
-    $\lfloor\frac{|V(G)|}{2}\rfloor$
-  }
-  \only<3>{
-    $|E(G)| > \Delta(G)\lfloor\frac{|V(G)|}{2}\rfloor$
-  }
 \end{frame}
 
+\begin{frame}{Problema da Coloração de Arestas}{Resultados conhecidos:
+    Condição suficiente para Classe 2}
+  \begin{center}
+  %\vspace{0.2in}
+    \begin{tikzpicture}[scale=3]
+      \draw (0, -0.1) node {c};
+      \draw (1, -0.1) node {d};
+      \draw (0, 1.1) node {a};
+      \draw (1, 1.1) node {b};
+      % \draw[very thick,->] (-0.4,0.5) -- (-0.2,0.5);
+      \draw[thick][red] (0,0) -- (0,1);
+      \draw[thick,dotted][gray] (0,0) -- (1,1);
+      \draw[thick,dotted][gray] (0,0) -- (1,0);
+      \draw[thick,dotted][gray] (0,1) -- (1,0);
+      \draw[thick,dotted][gray] (0,1) -- (1,1);
+      \draw[thick][red] (1,1) -- (1,0);
+      \filldraw [black] (0,0) circle (1pt)
+      (0,1) circle (1pt)
+      (1,1) circle (1pt)
+      (1,0) circle (1pt);
+    \end{tikzpicture}
+  \end{center}
+  \begin{center}
+    \only<1>{
+      $\lfloor\frac{|V(G)|}{2}\rfloor$
+    }
+    \only<2->{
+      $|E(G)| > \Delta(G)\lfloor\frac{|V(G)|}{2}\rfloor$
+    }
+  \end{center}
+\end{frame}
 
 \begin{frame}{Problema da Coloração de Arestas}{Resultados conhecidos}
   \begin{itemize}
